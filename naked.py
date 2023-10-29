@@ -35,13 +35,6 @@ logging.config.dictConfig(log_config)
 # Creating logger
 logger = logging.getLogger('root')
 
-# 
-<<<<<<< HEAD
- 
-=======
-nasa_api_key = "o7ikMCr2DYhZcWx1EkDDAc6cA3rhmD4iRYczAGdp"
-nasa_api_url = "https://api.nasa.gov/neo/"
->>>>>>> feature/ext-config-load
 
 # Getting todays date
 dt = datetime.now()
