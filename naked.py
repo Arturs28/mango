@@ -35,22 +35,17 @@ except:
 	logger.exception('')
 logger.info('DONE')
 
-<<<<<<< HEAD
-=======
-# 
-nasa_api_key = "o7ikMCr2DYhZcWx1EkDDAc6cA3rhmD4iRYczAGdp"
-nasa_api_url = "https://api.nasa.gov/neo/"
->>>>>>> feature/impelent-ext-logging
 
 # Getting todays date
 dt = datetime.now()
 request_date = str(dt.year) + "-" + str(dt.month).zfill(2) + "-" + str(dt.day).zfill(2)  
 logger.info("Generated today's date: " + str(request_date))
 
-
+#Requesting info from nasa
 logger.info("Request url: " + str(nasa_api_url + "rest/v1/feed?start_date=" + request_date + "&end_date=" + request_date + "&api_key=" + nasa_api_key))
 r = requests.get(nasa_api_url + "rest/v1/feed?start_date=" + request_date + "&end_date=" + request_date + "&api_key=" + nasa_api_key)
 
+# Logging response information, including status code, headers, and content
 logger.info("Response status code: " + str(r.status_code))
 logger.info("Response headers: " + str(r.headers))
 logger.info("Response content: " + str(r.text))
@@ -62,6 +57,7 @@ if r.status_code == 200:
 	ast_safe = []
 	ast_hazardous = []
 
+	# Check if the 'element_count' key exists in the JSON data and log the asteroid count if found
 	if 'element_count' in json_data:
 		ast_count = int(json_data['element_count'])
 		logger.info("Asteroid count today: " + str(ast_count))
@@ -83,18 +79,28 @@ if r.status_code == 200:
 						tmp_ast_diam_max = -1
 
 					tmp_ast_hazardous = val['is_potentially_hazardous_asteroid']
-
+					
+					# Check if there is close approach data available for the asteroid
 					if len(val['close_approach_data']) > 0:
+
+						# Check if the required keys 'epoch_date_close_approach', 'relative_velocity', and 'miss_distance' exist
 						if 'epoch_date_close_approach' and 'relative_velocity' and 'miss_distance' in val['close_approach_data'][0]:
+							# Extract and process the close approach timestamp
 							tmp_ast_close_appr_ts = int(val['close_approach_data'][0]['epoch_date_close_approach']/1000)
 							tmp_ast_close_appr_dt_utc = datetime.utcfromtimestamp(tmp_ast_close_appr_ts).strftime('%Y-%m-%d %H:%M:%S')
 							tmp_ast_close_appr_dt = datetime.fromtimestamp(tmp_ast_close_appr_ts).strftime('%Y-%m-%d %H:%M:%S')
 
+							
+							# Check if 'kilometers_per_hour' key exists in the 'relative_velocity' dictionary of the first close approach data entry
+							# If it exists, round and convert the value to an integer, otherwise, set it to -1
 							if 'kilometers_per_hour' in val['close_approach_data'][0]['relative_velocity']:
 								tmp_ast_speed = int(float(val['close_approach_data'][0]['relative_velocity']['kilometers_per_hour']))
 							else:
 								tmp_ast_speed = -1
 
+							
+							# Check if 'kilometers' key exists in the 'miss_distance' dictionary of the first close approach data entry
+							# If it exists, round and convert the value to a floating-point number, otherwise, set it to -1
 							if 'kilometers' in val['close_approach_data'][0]['miss_distance']:
 								tmp_ast_miss_dist = round(float(val['close_approach_data'][0]['miss_distance']['kilometers']), 3)
 							else:
@@ -111,6 +117,7 @@ if r.status_code == 200:
 						tmp_ast_speed = -1
 						tmp_ast_miss_dist = -1
 
+					# Log asteroid details
 					logger.info("------------------------------------------------------- >>")
 					logger.info("Asteroid name: " + str(tmp_ast_name) + " | INFO: " + str(tmp_ast_nasa_jpl_url) + " | Diameter: " + str(tmp_ast_diam_min) + " - " + str(tmp_ast_diam_max) + " km | Hazardous: " + str(tmp_ast_hazardous))
 					logger.info("Close approach TS: " + str(tmp_ast_close_appr_ts) + " | Date/time UTC TZ: " + str(tmp_ast_close_appr_dt_utc) + " | Local TZ: " + str(tmp_ast_close_appr_dt))
@@ -124,25 +131,31 @@ if r.status_code == 200:
 
 		else:
 			logger.info("No asteroids are going to hit earth today")
-
+			
+	# Log the count of hazardous and safe asteroids as a warning
 	logger.warning("Hazardous asteorids: " + str(len(ast_hazardous)) + " | Safe asteroids: " + str(len(ast_safe)))
 
+	# Check if there are hazardous asteroids in the list
 	if len(ast_hazardous) > 0:
-
+		
+		# Sort the hazardous asteroids by time of close approach
 		ast_hazardous.sort(key = lambda x: x[4], reverse=False)
 
+		# Log information about hazardous asteroids, including their close approach times and additional details
 		logger.warning("Today's possible apocalypse (asteroid impact on earth) times:")
 		for asteroid in ast_hazardous:
 			logger.info(str(asteroid[6]) + " " + str(asteroid[0]) + " " + " | more info: " + str(asteroid[1]))
-
+			
+		# Sort the hazardous asteroids by closest passing distance
 		ast_hazardous.sort(key = lambda x: x[8], reverse=False)
+		
+		# Log information about the hazardous asteroid with the closest passing distance
 		logger.info("Closest passing distance is for: " + str(ast_hazardous[0][0]) + " at: " + str(int(ast_hazardous[0][8])) + " km | more info: " + str(ast_hazardous[0][1]))
-	else:
-		logger.info("No asteroids close passing earth today")
 
+	else:
+		# Log a message indicating that there are no hazardous asteroids close to Earth today
+		logger.info("No asteroids close passing earth today")
+		
+# Handle the case where there was an issue getting a response from the API
 else:
-<<<<<<< HEAD
 	logger.error("Unable to get response from API. Response code: " + str(r.status_code) + " | content: " + str(r.text))
-=======
-	print("Unable to get response from API. Response code: " + str(r.status_code) + " | content: " + str(r.text))
->>>>>>> feature/impelent-ext-logging
