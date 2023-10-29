@@ -254,4 +254,4 @@ if __name__ == "__main__":
 		
 	# Handle the case where there was an issue getting a response from the API
 	else:
-	logger.error("Unable to get response from API. Response code: " + str(r.status_code) + " | content: " + str(r.text))
+		logger.error("Unable to get response from API. Response code: " + str(r.status_code) + " | content: " + str(r.text))
