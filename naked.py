@@ -35,6 +35,12 @@ except:
 	logger.exception('')
 logger.info('DONE')
 
+<<<<<<< HEAD
+=======
+# 
+nasa_api_key = "o7ikMCr2DYhZcWx1EkDDAc6cA3rhmD4iRYczAGdp"
+nasa_api_url = "https://api.nasa.gov/neo/"
+>>>>>>> feature/impelent-ext-logging
 
 # Getting todays date
 dt = datetime.now()
@@ -135,4 +141,8 @@ if r.status_code == 200:
 		logger.info("No asteroids close passing earth today")
 
 else:
+<<<<<<< HEAD
 	logger.error("Unable to get response from API. Response code: " + str(r.status_code) + " | content: " + str(r.text))
+=======
+	print("Unable to get response from API. Response code: " + str(r.status_code) + " | content: " + str(r.text))
+>>>>>>> feature/impelent-ext-logging
