@@ -151,6 +151,8 @@ if __name__ == "__main__":
 						# If all keys exist, extract their values
 						tmp_ast_name = val['name']
 						tmp_ast_nasa_jpl_url = val['nasa_jpl_url']
+						# Getting id of asteroid
+						tmp_ast_id = val['id']
 	
 						# Check if 'kilometers' key exists in the 'estimated_diameter' dictionary
 						if 'kilometers' in val['estimated_diameter']:
@@ -215,9 +217,9 @@ if __name__ == "__main__":
 						
 						# Adding asteroid data to the corresponding array
 						if tmp_ast_hazardous == True:
-							ast_hazardous.append([tmp_ast_name, tmp_ast_nasa_jpl_url, tmp_ast_diam_min, tmp_ast_diam_max, tmp_ast_close_appr_ts, tmp_ast_close_appr_dt_utc, tmp_ast_close_appr_dt, tmp_ast_speed, tmp_ast_miss_dist])
+							ast_hazardous.append([tmp_ast_name, tmp_ast_nasa_jpl_url, tmp_ast_diam_min, tmp_ast_diam_max, tmp_ast_close_appr_ts, tmp_ast_close_appr_dt_utc, tmp_ast_close_appr_dt, tmp_ast_speed, tmp_ast_miss_dist, tmp_ast_id])
 						else:
-							ast_safe.append([tmp_ast_name, tmp_ast_nasa_jpl_url, tmp_ast_diam_min, tmp_ast_diam_max, tmp_ast_close_appr_ts, tmp_ast_close_appr_dt_utc, tmp_ast_close_appr_dt, tmp_ast_speed, tmp_ast_miss_dist])
+							ast_safe.append([tmp_ast_name, tmp_ast_nasa_jpl_url, tmp_ast_diam_min, tmp_ast_diam_max, tmp_ast_close_appr_ts, tmp_ast_close_appr_dt_utc, tmp_ast_close_appr_dt, tmp_ast_speed, tmp_ast_miss_dist, tmp_ast_id])
 	
 			else:
 				logger.info("No asteroids are going to hit earth today")
@@ -241,11 +243,15 @@ if __name__ == "__main__":
 			
 			# Log information about the hazardous asteroid with the closest passing distance
 			logger.info("Closest passing distance is for: " + str(ast_hazardous[0][0]) + " at: " + str(int(ast_hazardous[0][8])) + " km | more info: " + str(ast_hazardous[0][1]))
+			push_asteroids_arrays_to_db(request_date, ast_hazardous, 1)
 	
 		else:
 			# Log a message indicating that there are no hazardous asteroids close to Earth today
 			logger.info("No asteroids close passing earth today")
 			
+		if len(ast_safe) > 0:
+			push_asteroids_arrays_to_db(request_date, ast_safe, 0)
+		
 	# Handle the case where there was an issue getting a response from the API
 	else:
 	logger.error("Unable to get response from API. Response code: " + str(r.status_code) + " | content: " + str(r.text))
