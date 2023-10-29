@@ -64,17 +64,26 @@ if r.status_code == 200:
 
 		if ast_count > 0:
 			for val in json_data['near_earth_objects'][request_date]:
+				
+				# Check if all the required keys exist in the 'val' dictionary
 				if 'name' and 'nasa_jpl_url' and 'estimated_diameter' and 'is_potentially_hazardous_asteroid' and 'close_approach_data' in val:
+					# If all keys exist, extract their values
 					tmp_ast_name = val['name']
 					tmp_ast_nasa_jpl_url = val['nasa_jpl_url']
+
+					# Check if 'kilometers' key exists in the 'estimated_diameter' dictionary
 					if 'kilometers' in val['estimated_diameter']:
+						# Check if 'estimated_diameter_min' and 'estimated_diameter_max' keys exist within 'kilometers'
 						if 'estimated_diameter_min' and 'estimated_diameter_max' in val['estimated_diameter']['kilometers']:
+							# Extract and round the minimum and maximum estimated diameters in kilometers
 							tmp_ast_diam_min = round(val['estimated_diameter']['kilometers']['estimated_diameter_min'], 3)
 							tmp_ast_diam_max = round(val['estimated_diameter']['kilometers']['estimated_diameter_max'], 3)
 						else:
+							# Set diameters to -2
 							tmp_ast_diam_min = -2
 							tmp_ast_diam_max = -2
 					else:
+						# Set diameters to -1
 						tmp_ast_diam_min = -1
 						tmp_ast_diam_max = -1
 
