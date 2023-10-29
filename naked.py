@@ -1,3 +1,6 @@
+import logging
+import logging.config
+
 import requests
 import json
 import datetime
@@ -22,6 +25,15 @@ try:
 except:
 	logger.exception('')
 print('DONE')
+
+# Loading logging configuration
+with open('./log_worker.yaml', 'r') as stream:
+ 	log_config = yaml.safe_load(stream)
+
+logging.config.dictConfig(log_config)
+
+# Creating logger
+logger = logging.getLogger('root')
 
 # 
 <<<<<<< HEAD
