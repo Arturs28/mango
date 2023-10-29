@@ -1,3 +1,6 @@
+import logging
+import logging.config
+
 import requests
 import json
 import datetime
